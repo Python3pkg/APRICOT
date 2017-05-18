@@ -21,9 +21,9 @@ def format_uniprot_table(proteome_table, uniprot_link):
                         "b'Entry") and not entry.startswith('b"Entry'):
                     proteome_table.write("%s\n" % '\t'.join(
                         list(entry.split('\\t'))))
-        print(('"\nDownloaded protein information using UniProt link: %s\n"' % (
-            uniprot_link)))
+        print('"\nDownloaded protein information using UniProt link: %s\n"' % (
+            uniprot_link))
     except:
-        print((
+        print(
             "UniProt entry is apparently deleted, please check: %s"
-            % uniprot_link))
+            % uniprot_link)

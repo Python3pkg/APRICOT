@@ -42,7 +42,7 @@ class PdbHomologyAnalysis(object):
     def run_pdb_analysis(self):
         for files in os.listdir(self._fasta_path):
             if files.split('.')[0] in self._selected_protein_set:
-                print(("PDB homology analysis for %s" % files))
+                print("PDB homology analysis for %s" % files)
                 subprocess.Popen(
                     ["bin/reference_db_files/blast/blastp -query %s/%s -db "
                      "%s -task blastp -outfmt 0 -out %s/%s.txt" % (

@@ -30,6 +30,6 @@ with open(input_file) as in_fh:
             version_link[DT(year, month, date, time)] = version
             version_list.append(DT(year, month, date, time))
     latest_version = max(version_list)
-    print(("Current version: %s" % version_link[latest_version]))
+    print("Current version: %s" % version_link[latest_version])
     with open(output_file, 'w') as out_fh:
         out_fh.write(version_link[latest_version])

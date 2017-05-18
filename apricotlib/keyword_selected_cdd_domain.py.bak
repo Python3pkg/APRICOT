@@ -1,11 +1,10 @@
 #!/usr/bin/env python
-# Description = RNA related CDD domain
+# Description = selects rna related domains from cdd database
 
 import re
 
 
 class RnaRelatedCDDSelection(object):
-    '''classification of data'''
     def __init__(self, keywords_file,
                  cdd_whole_data_file,
                  interpro_mapped_cdd,
@@ -20,21 +19,22 @@ class RnaRelatedCDDSelection(object):
         self._mapped_cdd_members = {}
     
     def select_cdd_domains(self):
-        ''''''
+        '''To call from apriot'''
         self.read_keyword_file()
         self.read_interpro_mapped_cdd_file()
         self.read_cdd_whole_data_file()
-        self.create_rna_related_domain_file()
+        self.create_keyword_selected_domain_file()
         
     def read_keyword_file(self):
-        '''reads keywords for domain selection'''
+        '''reads user provided keywords for domain selection'''
         self._keyword_list = [rna_keyword.strip()
                               for rna_keyword in open(
                                 self._keywords_file, 'r')]
         return self._keyword_list
     
     def read_interpro_mapped_cdd_file(self):
-        '''Parses interpro cdd mapped file to extract common information'''
+        '''Parses cdd interpro mapped file for
+        the extraction of common information'''
         with open(self._interpro_mapped_cdd, 'r') as in_fh:
             for entry in in_fh:
                 ipr_id = entry.strip().split('\t')[0]
@@ -58,61 +58,79 @@ class RnaRelatedCDDSelection(object):
                         cdd_entry.split('\t')[1], 'PF'+cdd_entry.split(
                             '\t')[1].split('pfam')[-1])
                 cdd_domain = cdd_entry.split('\t')[1]
-                if cdd_domain in list(self._mapped_cdd_members.keys()):
+                if cdd_domain in self._mapped_cdd_members.keys():
                     members = self._mapped_cdd_members[cdd_domain]
                 else:
                     members = 'NA'
                 self.cdd_whole_data_list.append(
                     cdd_entry.strip())
-                self._cdd_dict[cdd_entry.strip()] = cdd_entry.strip(
-                    ).split('\t')[3]
+                self._cdd_dict[cdd_entry.strip()] = " ".join(cdd_entry.strip(
+                    ).split('\t')[2:4])
         return self.cdd_whole_data_list, self._cdd_dict
     
-    def create_rna_related_domain_file(self):
-        '''Creates RNA related domain list'''
+    def create_keyword_selected_domain_file(self):
+        '''Creates a file with CDD derived domain of interest'''
         self._keyword_annotation_dict = {}
-        self._rna_related_domain = []
+        self._keyword_selected_domain = {}
         for cdd_entry in self.cdd_whole_data_list:
+            domain_full_name = list(self._cdd_dict[
+                cdd_entry].lower().replace('-', ' ').replace('_', ' ').split(' '))
             for keyword in self._keyword_list:
-                if ' ' in keyword:
-                    key_list = []
-                    for each_key in keyword.split(' '):
-                        key_list.append(each_key)
-                    match = re.search(r'\b%s*|\W%s\b'%(key_list[0].lower(),
-                                                       key_list[1].lower()),
-                                      self._cdd_dict[cdd_entry])
-                    if match:
+                check_keyword = keyword.lower()
+                #if 'rna' in check_keyword:
+                if '-' in check_keyword:
+                    ref_kw_list = check_keyword.split('-')
+                    new_kw_list = []
+                    for domain_name in domain_full_name:
+                        for string in ref_kw_list:
+                            if string == 'rna':
+                                if re.findall(
+                                        r"(?:\s|^)%s(?=\s|$)" % '*rna', domain_name):
+                                    if not string in set(new_kw_list):
+                                        new_kw_list.append(string)
+                            else:
+                                if re.findall(
+                                        r"(?:\s|^)%s(?=\s|$)" % string, domain_name):
+                                    if not string in set(new_kw_list):
+                                        new_kw_list.append(string)
+                    if str(ref_kw_list) == str(new_kw_list):
                         self._keyword_annotation_dict.setdefault(
                             keyword, []).append(cdd_entry)
                 else:
-                    match = re.search(r'\b%s\b'%keyword, self._cdd_dict[cdd_entry])
-                    if match:
-                        self._keyword_annotation_dict.setdefault(
-                            keyword, []).append(cdd_entry)
-                        
+                    for domain_name in domain_full_name:
+                        if re.findall(
+                                r"(?:\s|^)%s(?=\s|$)" % check_keyword, domain_name):
+                            self._keyword_annotation_dict.setdefault(
+                                keyword, []).append(cdd_entry)
         for fkeyword in self._keyword_list:
             fkeyword = fkeyword.replace(' ', '_')
-            with open(self._domain_data_path+'/'+fkeyword+'_related_cdd_ids.tab',
+            with open(self._domain_data_path + '/' + fkeyword +
+                      '_related_cdd_ids.tab',
                       'w') as keyword_specific_domain:
                 if self._keyword_annotation_dict.get(fkeyword):
                     for each_entry in self._keyword_annotation_dict[fkeyword]:
                         each_entry = each_entry.replace(
                             each_entry.split('\t')[3], " ".join(
-                                each_entry.split('\t')[3].split())).replace(';', ',')
+                                each_entry.split(
+                                    '\t')[3].split())).replace(';', ',')
                         cdd_domain = each_entry.split('\t')[1]
                         if cdd_domain in set(self._mapped_cdd_members.keys()):
                             members = self._mapped_cdd_members[cdd_domain]
                         else:
                             members = 'NA'
-                        keyword_specific_domain.write('%s\t%s\t%s\n'%(
+                        self._keyword_selected_domain.setdefault(
+                            '%s\t%s\t%s' % (
+                                '\t'.join(each_entry.split('\t')[0:-1]),
+                                members,
+                                each_entry.split(
+                                    '\t')[-1]), set()).add(fkeyword)
+                        keyword_specific_domain.write('%s\t%s\t%s\t%s\n' % (
                             '\t'.join(each_entry.split('\t')[0:-1]), members,
-                            each_entry.split('\t')[-1]))
-                        self._rna_related_domain.append(('%s\t%s\t%s'%(
-                            '\t'.join(each_entry.split('\t')[0:-1]), members,
-                            each_entry.split('\t')[-1])))
-            
-        uniq_rna_related_domains = list(set(self._rna_related_domain))
-        with open(self._domain_data_path+'/all_rna_related_cdd_data.tab',
-                  'w') as rna_related_domain_file:
-            for domain_entry in uniq_rna_related_domains:
-                rna_related_domain_file.write('%s\n'%str(domain_entry))
+                            each_entry.split('\t')[-1], fkeyword))
+        with open(self._domain_data_path+'/all_keyword_selected_cdd_data.tab',
+                  'w') as keyword_selected_domain_file:
+            for domain_entry in self._keyword_selected_domain.keys():
+                keywords = ', '.join(list(
+                    self._keyword_selected_domain[domain_entry]))
+                keyword_selected_domain_file.write(
+                    '%s\t%s\n' % (domain_entry, keywords))

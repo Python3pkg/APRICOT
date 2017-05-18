@@ -36,8 +36,8 @@ class RaptorxSecstrAnalysis(object):
         '''
         for files in os.listdir(self._fasta_path):
             if files.split('.')[0] in self._selected_protein_set:
-                print(("RaptorX 8-state secondary structure analysis for %s" %
-                      files))
+                print("RaptorX 8-state secondary structure analysis for %s" %
+                      files)
                 subprocess.Popen(
                     ["perl %s %s/%s" %
                      (self._raptorx_path, self._fasta_path, files)],

@@ -36,11 +36,11 @@ class CollectUniprotInformation(object):
                     uid_list = entry.strip().split(':')[-1]
                     if ',' in uid_list:
                         for uid in uid_list.split(','):
-                            print(("Storing xml and fasta information for: " % uid))
+                            print("Storing xml and fasta information for: " % uid)
                             self._get_uniprot_xml(uid, self._uniprot_xml_path)
                             self._get_uniprot_fasta(uid, self._uniprot_fasta_path)
                     else:
-                        print(("Storing xml and fasta information for: %s" % uid_list))
+                        print("Storing xml and fasta information for: %s" % uid_list)
                         self._get_uniprot_xml(uid_list, self._uniprot_xml_path)
                         self._get_uniprot_fasta(uid_list, self._uniprot_fasta_path)
         
@@ -79,9 +79,9 @@ class CollectUniprotInformation(object):
             xml_file.write(response.read())
             xml_file.close()
         except:
-            print((
+            print(
                 "UniProt entry is apparently deleted, please check: %s"
-                % xml_url))
+                % xml_url)
         
     def _get_uniprot_fasta(self, uid, fasta_path):
         '''Downloads fasta file from UniProt for query Uid'''
@@ -92,9 +92,9 @@ class CollectUniprotInformation(object):
             fasta_file.write(response.read())
             fasta_file.close()
         except:
-            print((
+            print(
                 "UniProt entry is apparently deleted, please check: %s"
-                % fasta_url))
+                % fasta_url)
         
     def create_feature_table(self):
         '''creates feature files by extracting information from uniprot xml'''
@@ -127,10 +127,10 @@ class CollectUniprotInformation(object):
                 for protein in protein_parse:
                     self._get_xml_protein_feature(protein, feature_table)
         except:
-            print((
+            print(
             "UniProt entry is apparently deleted, please check: "
                 "'http://www.uniprot.org/uniprot/%s'"
-                % each_xml))
+                % each_xml)
                 
     def _get_xml_protein_feature(self, protein, feature_table):
         '''Records all the features in UniProt xml files'''
