@@ -41,8 +41,8 @@ class LiteratureSecstrAnalysis(object):
         structure predictionon the selected uids'''
         for files in os.listdir(self._fasta_path):
             if files.split('.')[0] in self._selected_protein_set:
-                print(("Literature acid based secondary structure "
-                      "analysis for %s" % files))
+                print("Literature acid based secondary structure "
+                      "analysis for %s" % files)
                 with open(self._outpath+'/%s.plain' % files.split('.')[0],
                           'w') as out_fh:
                     out_fh.write("#Literature based three-class secondary "

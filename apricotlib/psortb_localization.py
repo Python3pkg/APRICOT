@@ -39,7 +39,7 @@ class PsortbSubcellularLocalization(object):
         localization information of the query proteins'''
         for files in os.listdir(self._fasta_path):
             if files.split('.')[0] in self._selected_protein_set:
-                print(("Psortb subcellular localization analysis for %s" % files))
+                print("Psortb subcellular localization analysis for %s" % files)
                 subprocess.Popen(
                 ["perl %s -n %s/%s > %s/%s_localization.csv" %
                  (self._psortb_path, self._fasta_path,
@@ -74,7 +74,7 @@ class PsortbSubcellularLocalization(object):
                             localization = 'Unknown'
                             score = '-'
                         else:
-                            print(("this entry's localization is not listed: %s" % prediction))
+                            print("this entry's localization is not listed: %s" % prediction)
                         self._localization_dict[localization][protein] = score
                         
         return self._localization_dict
@@ -87,12 +87,12 @@ class PsortbSubcellularLocalization(object):
             for entry in list(self._localization_dict.items()):
                 localization = entry[0]
                 out_fh.write("Localization: %s\tscore\n" % localization)
-                print((localization, len(self._localization_dict[localization])))
+                print(localization, len(self._localization_dict[localization]))
                 for protein in list(entry[1].keys()):
                     score = self._localization_dict[localization][protein]
                     out_fh.write('%s\t%s\t%s\n' % (protein, localization, score))
-        print(("Data save is %s.\nPlease check %s for the summary." % (
-            self._outpath, outfile)))
+        print("Data save is %s.\nPlease check %s for the summary." % (
+            self._outpath, outfile))
     
     def create_job_completion_file(self):
         with open(self._outpath+'/psortb_analysis.txt', 'w') as out_fh:

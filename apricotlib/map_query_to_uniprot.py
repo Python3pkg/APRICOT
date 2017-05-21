@@ -49,7 +49,7 @@ class CollectUniprotInformation(object):
         '''Maps query gene ids to the UniProt entry'''
         for each_query in list(self._query_protein_set):
             print(each_query)
-            print(('Retrieving protein for: %s' % each_query))
+            print('Retrieving protein for: %s' % each_query)
             self._gene_to_protein_dict.setdefault(
                 each_query, []).append(each_query)
             for protein, description in list(self._protein_data_dict.items()):

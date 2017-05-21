@@ -121,7 +121,7 @@ class FilterPredictedDomains(object):
                                 self._domain_length[cdd_main.split(
                                         '\t')[1]] = individual_rps_result.split('Length=')[1].strip()
                                 if individual_rps_result.split('Length=')[1].strip() == 'NA':
-                                    print((individual_rps_result.split('Length=')[1].strip()))
+                                    print(individual_rps_result.split('Length=')[1].strip())
                         for each_stat_group in stat_data[1:]:
                             length = self._domain_length[cdd_main.split('\t')[1]]
                             # if length == 'NA':
@@ -403,14 +403,14 @@ class FilterPredictedDomains(object):
         for each_candidate in list(self._candidate_set):
             filtered_file.write('%s\n' % each_candidate)
             summary_file.write('%s\tSelected\n' % each_candidate)
-        print(("Filtered uniprot IDs by %s:" % self._prediction_method))
+        print("Filtered uniprot IDs by %s:" % self._prediction_method)
         for candidate_entry in self._candidate_set:
             short_name = candidate_entry.split('\t')[4]
             uid = candidate_entry.split('\t')[1]
             db_id = candidate_entry.split('\t')[3]
             self._id_set.add('%s\t%s\t%s' % (uid, db_id, short_name))
         id_list = sorted(self._id_set)
-        print(('UID\tDomain Info\n'+'\n'.join(id_list)))
+        print('UID\tDomain Info\n'+'\n'.join(id_list))
         id_file.write('\n'.join(id_list))
         for remaining_id in set(self._result_detail_dict.keys()):
             for each_entry in self._result_detail_dict[remaining_id]:
